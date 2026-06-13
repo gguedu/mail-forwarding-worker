@@ -169,6 +169,16 @@ const getDestination = async (env: Env, id: string) => {
   return cfFetch<DestinationAddress>(env, `/accounts/${env.CF_ACCOUNT_ID}/email/routing/addresses/${id}`)
 }
 
+const deleteDestination = async (env: Env, id: string) => {
+  try {
+    await cfFetch<null>(env, `/accounts/${env.CF_ACCOUNT_ID}/email/routing/addresses/${id}`, {
+      method: 'DELETE'
+    })
+  } catch {
+    // 目标地址可能已被删除，忽略错误
+  }
+}
+
 const upsertRule = async (env: Env, record: ForwardingRecord) => {
   const body = {
     actions: [
@@ -235,8 +245,12 @@ const publicRecord = (sourceEmail: string, record: ForwardingRecord | null) => (
 const handleStatus = async (request: Request, env: Env) => {
   const sourceEmail = await getCurrentUserEmail(request, env)
   const record = await getRecord(env, sourceEmail)
-  if (!record?.destinationId) {
+  if (!record) {
     return publicRecord(sourceEmail, null)
+  }
+
+  if (!record.destinationId) {
+    return publicRecord(sourceEmail, { ...record, verified: false, enabled: false })
   }
 
   const destination = await getDestination(env, record.destinationId)
@@ -311,7 +325,17 @@ const handleDelete = async (request: Request, env: Env) => {
   }
 
   await disableRule(env, record)
-  const nextRecord = { ...record, enabled: false, updatedAt: new Date().toISOString() }
+  if (record.destinationId) {
+    await deleteDestination(env, record.destinationId)
+  }
+  const nextRecord: ForwardingRecord = {
+    ...record,
+    destinationId: '',
+    ruleId: null,
+    verified: false,
+    enabled: false,
+    updatedAt: new Date().toISOString()
+  }
   await putRecord(env, nextRecord)
   return publicRecord(sourceEmail, nextRecord)
 }
