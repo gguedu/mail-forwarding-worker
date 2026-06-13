@@ -1,0 +1,14 @@
+name = "ggu-mail-forwarding"
+main = "src/index.ts"
+compatibility_date = "2026-06-08"
+
+[[kv_namespaces]]
+binding = "FORWARDING_KV"
+id = "replace-with-production-kv-id"
+preview_id = "replace-with-preview-kv-id"
+
+[vars]
+CF_ACCOUNT_ID = "replace-with-cloudflare-account-id"
+CF_ZONE_ID = "replace-with-cloudflare-zone-id"
+MAIL_API_BASE_URL = "https://mail.ggu.edu.kg/api"
+ALLOWED_ORIGIN = "https://ggu.edu.kg"
