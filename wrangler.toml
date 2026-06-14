@@ -8,7 +8,6 @@ id = "1796f86cc06f46e9a7c937fe485fed95"
 preview_id = "1796f86cc06f46e9a7c937fe485fed95"
 
 [vars]
-CF_ACCOUNT_ID = "730d89337fbc0eee3aef679b435ff0f8"
-CF_ZONE_ID = "8f26442145a44b086a829d47db323568"
 MAIL_API_BASE_URL = "https://mail.ggu.edu.kg/api"
 ALLOWED_ORIGIN = "https://ggu.edu.kg"
+FROM_EMAIL = "relay@mailforwarding.ggu.edu.kg"
